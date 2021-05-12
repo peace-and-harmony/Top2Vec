@@ -2146,21 +2146,13 @@ class Top2Vec:
             word_score_dict = dict(zip(self.topic_words[topic_num],
                                        softmax(self.topic_word_scores[topic_num])))
 
-        figure = plt.figure(figsize=(16, 4),
+        plt.figure(figsize=(16, 4),
                    dpi=200)
-        figure.axis("off")
-        figure.imshow(
+        plt.axis("off")
+        plt.imshow(
             WordCloud(width=1600,
                       height=400,
                       background_color=background_color).generate_from_frequencies(word_score_dict))
-        figure.title("Topic " + str(topic_num), loc='left', fontsize=25, pad=20)
-        return figure
+        plt.title("Topic " + str(topic_num), loc='left', fontsize=25, pad=20)
 
-        # plt.figure(figsize=(16, 4),
-        #            dpi=200)
-        # plt.axis("off")
-        # plt.imshow(
-        #     WordCloud(width=1600,
-        #               height=400,
-        #               background_color=background_color).generate_from_frequencies(word_score_dict))
-        # plt.title("Topic " + str(topic_num), loc='left', fontsize=25, pad=20)
+        return plt
