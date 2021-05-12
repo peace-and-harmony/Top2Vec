@@ -123,7 +123,7 @@ class Top2Vec:
         a longer time to train. The deep-learn option will learn the best
         quality vectors but will take significant time to train. The valid
         string speed options are:
-        
+
             * fast-learn
             * learn
             * deep-learn
@@ -151,7 +151,7 @@ class Top2Vec:
     workers: int (Optional)
         The amount of worker threads to be used in training the model. Larger
         amount will lead to faster training.
-    
+
     tokenizer: callable (Optional, default None)
         Override the default tokenization method. If None then
         gensim.utils.simple_preprocess will be used.
@@ -167,7 +167,7 @@ class Top2Vec:
 
     hdbscan_args: dict (Optional, default None)
         Pass custom arguments to HDBSCAN.
-    
+
     verbose: bool (Optional, default True)
         Whether to print status data during training.
     """
@@ -962,7 +962,7 @@ class Top2Vec:
         """
         Creates an index of the document vectors using hnswlib. This will
         lead to faster search times for models with a large number of
-        documents. 
+        documents.
 
         For more information on hnswlib see: https://github.com/nmslib/hnswlib
 
@@ -1376,7 +1376,7 @@ class Top2Vec:
         topics_words: array of shape(num_topics, 50)
             For each topic the top 50 words are returned, in order
             of semantic similarity to topic.
-            
+
             Example:
             [['data', 'deep', 'learning' ... 'artificial'],         <Topic 0>
             ['environment', 'warming', 'climate ... 'temperature']  <Topic 1>
@@ -1385,7 +1385,7 @@ class Top2Vec:
         word_scores: array of shape(num_topics, 50)
             For each topic the cosine similarity scores of the
             top 50 words to the topic are returned.
-            
+
             Example:
             [[0.7132, 0.6473, 0.5700 ... 0.3455],  <Topic 0>
             [0.7818', 0.7671, 0.7603 ... 0.6769]   <Topic 1>
@@ -1954,7 +1954,7 @@ class Top2Vec:
         topics_words: array of shape (num_topics, 50)
             For each topic the top 50 words are returned, in order of semantic
             similarity to topic.
-            
+
             Example:
             [['data', 'deep', 'learning' ... 'artificial'],           <Topic 0>
             ['environment', 'warming', 'climate ... 'temperature']    <Topic 1>
@@ -1963,7 +1963,7 @@ class Top2Vec:
         word_scores: array of shape (num_topics, 50)
             For each topic the cosine similarity scores of the top 50 words
             to the topic are returned.
-            
+
             Example:
             [[0.7132, 0.6473, 0.5700 ... 0.3455],     <Topic 0>
             [0.7818', 0.7671, 0.7603 ... 0.6769]     <Topic 1>
@@ -2146,11 +2146,21 @@ class Top2Vec:
             word_score_dict = dict(zip(self.topic_words[topic_num],
                                        softmax(self.topic_word_scores[topic_num])))
 
-        plt.figure(figsize=(16, 4),
+        figure = plt.figure(figsize=(16, 4),
                    dpi=200)
-        plt.axis("off")
-        plt.imshow(
+        figure.axis("off")
+        figure.imshow(
             WordCloud(width=1600,
                       height=400,
                       background_color=background_color).generate_from_frequencies(word_score_dict))
-        plt.title("Topic " + str(topic_num), loc='left', fontsize=25, pad=20)
+        figure.title("Topic " + str(topic_num), loc='left', fontsize=25, pad=20)
+        return figure
+
+        # plt.figure(figsize=(16, 4),
+        #            dpi=200)
+        # plt.axis("off")
+        # plt.imshow(
+        #     WordCloud(width=1600,
+        #               height=400,
+        #               background_color=background_color).generate_from_frequencies(word_score_dict))
+        # plt.title("Topic " + str(topic_num), loc='left', fontsize=25, pad=20)
