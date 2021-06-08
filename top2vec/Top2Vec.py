@@ -171,8 +171,9 @@ class Top2Vec:
     verbose: bool (Optional, default True)
         Whether to print status data during training.
 
-    outlier: bool (Optional, default True)
+    outlier_quantile: float (Optional, default 0.9)
         Whether to perform outlier detection.
+        If outlier_quantile = None, do not perform outlier detection.
     """
 
     def __init__(self,
@@ -190,7 +191,7 @@ class Top2Vec:
                  umap_args=None,
                  hdbscan_args=None,
                  verbose=True,
-                 outlier=True
+                 outlier_quantile=0.9
                  ):
 
 
@@ -374,13 +375,13 @@ class Top2Vec:
         cluster = hdbscan.HDBSCAN(**hdbscan_args).fit(umap_model.embedding_)
 
         # outlier detection
-        if outlier:
+        if outlier_quantile:
             cluster_out_score = cluster.outlier_scores_
-            threshold = pd.Series(cluster_out_score).quantile(0.9)
+            threshold = pd.Series(cluster_out_score).quantile(outlier_quantile)
             outliers_remvd_idx = np.where(cluster.outlier_scores_ < threshold)[0]
 
             logger.info('Finding topics with outlier detection ON')
-            logger.info(f'{len(outliers_remvd_idx)}/{len(cluster_out_score)} outliers found!')
+            logger.info(f'{len(cluster_out_score) - len(outliers_remvd_idx)}/{len(cluster_out_score)} outliers found!')
 
             self._create_topic_vectors(cluster.labels_[outliers_remvd_idx])
 
