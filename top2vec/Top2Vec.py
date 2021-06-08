@@ -170,6 +170,9 @@ class Top2Vec:
 
     verbose: bool (Optional, default True)
         Whether to print status data during training.
+
+    outlier: bool (Optional, default True)
+        Whether to perform outlier detection.
     """
 
     def __init__(self,
@@ -187,7 +190,9 @@ class Top2Vec:
                  umap_args=None,
                  hdbscan_args=None,
                  verbose=True
+                 outlier=True
                  ):
+
 
         if verbose:
             logger.setLevel(logging.DEBUG)
@@ -368,11 +373,23 @@ class Top2Vec:
 
         cluster = hdbscan.HDBSCAN(**hdbscan_args).fit(umap_model.embedding_)
 
-        # calculate topic vectors from dense areas of documents
-        logger.info('Finding topics')
+        # outlier detection
+        if outlier:
+            cluster_out_score = cluster.outlier_scores_
+            threshold = pd.Series(cluster_out_score).quantile(0.9)
+            outliers_remvd_idx = np.where(cluster.outlier_scores_ < threshold)[0]
 
-        # create topic vectors
-        self._create_topic_vectors(cluster.labels_)
+            logger.info('Finding topics with outlier detection ON')
+            logger.info(f'{len(outliers_remvd_idx)}/{len(cluster_out_score)} outliers found!')
+
+            self._create_topic_vectors(cluster.labels_[outliers_remvd_idx])
+
+        else:
+            # calculate topic vectors from dense areas of documents
+            logger.info('Finding topics')
+
+            # create topic vectors
+            self._create_topic_vectors(cluster.labels_)
 
         # deduplicate topics
         self._deduplicate_topics()
