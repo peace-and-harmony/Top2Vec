@@ -568,15 +568,27 @@ class Top2Vec:
 
     def _get_document_vectors(self, norm=True):
 
-        if self.embedding_model == 'doc2vec':
+        if outlier_quantile:
+            if self.embedding_model == 'doc2vec':
 
-            if norm:
-                self.model.docvecs.init_sims()
-                return self.model.docvecs.vectors_docs_norm
+                if norm:
+                    self.model.docvecs.init_sims()
+                    return self.model.docvecs.vectors_docs_norm[outliers_remvd_idx]
+                else:
+                    return self.model.docvecs.vectors_docs[outliers_remvd_idx]
             else:
-                return self.model.docvecs.vectors_docs
+                return self.document_vectors[outliers_remvd_idx]
+
         else:
-            return self.document_vectors
+            if self.embedding_model == 'doc2vec':
+
+                if norm:
+                    self.model.docvecs.init_sims()
+                    return self.model.docvecs.vectors_docs_norm
+                else:
+                    return self.model.docvecs.vectors_docs
+            else:
+                return self.document_vectors
 
     def _index2word(self, index):
         if self.embedding_model == 'doc2vec':
