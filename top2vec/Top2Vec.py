@@ -420,6 +420,15 @@ class Top2Vec:
 
             self.noise_remvd_idx = noise_remvd_idx
 
+            umap_args = {'n_neighbors': 15,
+                         'n_components': 2,
+                         'metric': 'cosine'}
+
+            umap_model = umap.UMAP(**umap_args).fit(self._get_document_vectors(norm=False)[noise_remvd_idx])
+
+            # return umap_model
+            self.umap_model = umap_model
+
         else:
             # calculate topic vectors from dense areas of documents
             logger.info('Finding topics')
