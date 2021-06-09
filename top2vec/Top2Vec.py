@@ -566,7 +566,7 @@ class Top2Vec:
         else:
             self.document_vectors = document_vectors
 
-    def _get_document_vectors(self, norm=True, outlier_quantile):
+    def _get_document_vectors(self, outlier_quantile, norm=True):
 
         if outlier_quantile:
             if self.embedding_model == 'doc2vec':
