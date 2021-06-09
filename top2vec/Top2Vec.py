@@ -588,11 +588,12 @@ class Top2Vec:
                 self.model.docvecs.init_sims()
                 return self.model.docvecs.vectors_docs_norm[self.outliers_remvd_idx]
             else:
-                print(self.model.docvecs.vectors_docs.shape)
-                print(self.model.docvecs.vectors_docs[self.outliers_remvd_idx])
                 return self.model.docvecs.vectors_docs[self.outliers_remvd_idx]
         else:
             return self.document_vectors[outliers_remvd_idx]
+
+    def _get_outliers_remvd_idx(self):
+        return self.outliers_remvd_idx
 
     def _index2word(self, index):
         if self.embedding_model == 'doc2vec':
