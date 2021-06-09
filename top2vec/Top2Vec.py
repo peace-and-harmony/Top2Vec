@@ -368,9 +368,6 @@ class Top2Vec:
 
         umap_model = umap.UMAP(**umap_args).fit(self._get_document_vectors(norm=False))
 
-        # return umap_model
-        self.umap_model = umap_model
-
         # find dense areas of document vectors
         logger.info('Finding dense areas of documents')
 
@@ -393,6 +390,15 @@ class Top2Vec:
             self._create_topic_vectors(cluster.labels_[outliers_remvd_idx])
 
             self.outliers_remvd_idx = outliers_remvd_idx
+
+            umap_args = {'n_neighbors': 15,
+                         'n_components': 2,
+                         'metric': 'cosine'}
+
+            umap_model = umap.UMAP(**umap_args).fit(self._get_document_vectors(norm=False)[outliers_remvd_idx])
+
+            # return umap_model
+            self.umap_model = umap_model
 
 
         else:
