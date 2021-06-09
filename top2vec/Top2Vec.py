@@ -405,7 +405,7 @@ class Top2Vec:
             noise_remvd_idx = np.where(cluster.labels_ != -1)[0]
 
             logger.info('Finding topics with noisy sample removal ON')
-            logger.info(f'{len(cluster.labels) - len(noise_remvd_idx)}/{len(cluster.labels)} noisy samples found!')
+            logger.info(f'{len(cluster.labels_) - len(noise_remvd_idx)}/{len(cluster.labels_)} noisy samples found!')
 
             self._create_topic_vectors(cluster.labels_[noise_remvd_idx])
 
