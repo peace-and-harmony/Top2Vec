@@ -368,6 +368,9 @@ class Top2Vec:
 
         umap_model = umap.UMAP(**umap_args).fit(self._get_document_vectors(norm=False))
 
+        # return umap_model
+        self.umap_model = umap_model
+
         # find dense areas of document vectors
         logger.info('Finding dense areas of documents')
 
@@ -633,6 +636,9 @@ class Top2Vec:
 
     def _get_noise_remvd_idx(self):
         return self.noise_remvd_idx
+
+    def _get_umap_model(self):
+        return self.umap_model
 
     def _index2word(self, index):
         if self.embedding_model == 'doc2vec':
