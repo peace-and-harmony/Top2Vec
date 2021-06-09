@@ -385,6 +385,8 @@ class Top2Vec:
 
             self._create_topic_vectors(cluster.labels_[outliers_remvd_idx])
 
+            self.outliers_remvd_idx = outliers_remvd_idx
+
         else:
             # calculate topic vectors from dense areas of documents
             logger.info('Finding topics')
@@ -578,17 +580,17 @@ class Top2Vec:
         else:
             return self.document_vectors
 
-    def _outlier_clean_document_vectors(self, outlier_quantile, norm=True):
+    def _outlier_clean_document_vectors(self, norm=True):
 
         if self.embedding_model == 'doc2vec':
 
             if norm:
                 self.model.docvecs.init_sims()
-                return self.model.docvecs.vectors_docs_norm[outliers_remvd_idx]
+                return self.model.docvecs.vectors_docs_norm[self.outliers_remvd_idx]
             else:
                 print(self.model.docvecs.vectors_docs.shape)
-                print(self.model.docvecs.vectors_docs[outliers_remvd_idx])
-                return self.model.docvecs.vectors_docs[outliers_remvd_idx]
+                print(self.model.docvecs.vectors_docs[self.outliers_remvd_idx])
+                return self.model.docvecs.vectors_docs[self.outliers_remvd_idx]
         else:
             return self.document_vectors[outliers_remvd_idx]
 
