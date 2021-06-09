@@ -566,31 +566,31 @@ class Top2Vec:
         else:
             self.document_vectors = document_vectors
 
-    def _get_document_vectors(self, outlier_quantile, norm=True):
+    def _get_document_vectors(self, norm=True):
 
-        if outlier_quantile:
-            if self.embedding_model == 'doc2vec':
+        if self.embedding_model == 'doc2vec':
 
-                if norm:
-                    self.model.docvecs.init_sims()
-                    return self.model.docvecs.vectors_docs_norm[outliers_remvd_idx]
-                else:
-                    print(self.model.docvecs.vectors_docs.shape)
-                    print(self.model.docvecs.vectors_docs[outliers_remvd_idx].shape)
-                    return self.model.docvecs.vectors_docs[outliers_remvd_idx]
+            if norm:
+                self.model.docvecs.init_sims()
+                return self.model.docvecs.vectors_docs_norm
             else:
-                return self.document_vectors[outliers_remvd_idx]
-
+                return self.model.docvecs.vectors_docs
         else:
-            if self.embedding_model == 'doc2vec':
+            return self.document_vectors
 
-                if norm:
-                    self.model.docvecs.init_sims()
-                    return self.model.docvecs.vectors_docs_norm
-                else:
-                    return self.model.docvecs.vectors_docs
+    def _outlier_clean_document_vectors(self, outlier_quantile, norm=True):
+
+        if self.embedding_model == 'doc2vec':
+
+            if norm:
+                self.model.docvecs.init_sims()
+                return self.model.docvecs.vectors_docs_norm[outliers_remvd_idx]
             else:
-                return self.document_vectors
+                print(self.model.docvecs.vectors_docs.shape)
+                print(self.model.docvecs.vectors_docs[outliers_remvd_idx])
+                return self.model.docvecs.vectors_docs[outliers_remvd_idx]
+        else:
+            return self.document_vectors[outliers_remvd_idx]
 
     def _index2word(self, index):
         if self.embedding_model == 'doc2vec':
