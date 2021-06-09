@@ -171,9 +171,12 @@ class Top2Vec:
     verbose: bool (Optional, default True)
         Whether to print status data during training.
 
-    outlier_quantile: float (Optional, default 0.9)
-        Whether to perform outlier detection.
+    outlier_quantile: float (Optional, default None)
+        Whether to perform outlier detection with implementation of GLOSH.
         If outlier_quantile = None, do not perform outlier detection.
+
+    noise_remv : bool (Optional, default False)
+        Whether to preform noisy sample removal.
     """
 
     def __init__(self,
@@ -191,7 +194,8 @@ class Top2Vec:
                  umap_args=None,
                  hdbscan_args=None,
                  verbose=True,
-                 outlier_quantile=0.9
+                 outlier_quantile=None,
+                 noise_remv=False
                  ):
 
 
@@ -386,6 +390,26 @@ class Top2Vec:
             self._create_topic_vectors(cluster.labels_[outliers_remvd_idx])
 
             self.outliers_remvd_idx = outliers_remvd_idx
+
+
+        else:
+            # calculate topic vectors from dense areas of documents
+            logger.info('Finding topics')
+
+            # create topic vectors
+            self._create_topic_vectors(cluster.labels_)
+
+        # noisy sample removal
+        if noise_remv:
+            noise_labels = cluster.labels_
+            noise_remvd_idx = np.where(cluster.labels_ != -1)[0]
+
+            logger.info('Finding topics with noisy sample removal ON')
+            logger.info(f'{len(cluster.labels) - len(noise_remvd_idx)}/{len(cluster.labels)} noisy samples found!')
+
+            self._create_topic_vectors(cluster.labels_[noise_remvd_idx])
+
+            self.noise_remvd_idx = noise_remvd_idx
 
         else:
             # calculate topic vectors from dense areas of documents
@@ -590,10 +614,25 @@ class Top2Vec:
             else:
                 return self.model.docvecs.vectors_docs[self.outliers_remvd_idx]
         else:
-            return self.document_vectors[outliers_remvd_idx]
+            return self.document_vectors[self.outliers_remvd_idx]
+
+    def _noise_clean_document_vectors(self, norm=True):
+
+        if self.embedding_model == 'doc2vec':
+
+            if norm:
+                self.model.docvecs.init_sims()
+                return self.model.docvecs.vectors_docs_norm[self.noise_remvd_idx]
+            else:
+                return self.model.docvecs.vectors_docs[self.noise_remvd_idx]
+        else:
+            return self.document_vectors[self.noise_remvd_idx]
 
     def _get_outliers_remvd_idx(self):
         return self.outliers_remvd_idx
+
+    def _get_noise_remvd_idx(self):
+        return self.noise_remvd_idx
 
     def _index2word(self, index):
         if self.embedding_model == 'doc2vec':
