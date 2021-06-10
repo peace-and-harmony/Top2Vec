@@ -391,10 +391,6 @@ class Top2Vec:
 
             self.outliers_remvd_idx = outliers_remvd_idx
 
-            umap_args = {'n_neighbors': 15,
-                         'n_components': 2,
-                         'metric': 'cosine'}
-
             umap_model = umap.UMAP(**umap_args).fit(self._get_document_vectors(norm=False)[outliers_remvd_idx])
 
             # return umap_model
@@ -419,10 +415,6 @@ class Top2Vec:
             self._create_topic_vectors(cluster.labels_[noise_remvd_idx])
 
             self.noise_remvd_idx = noise_remvd_idx
-
-            umap_args = {'n_neighbors': 15,
-                         'n_components': 2,
-                         'metric': 'cosine'}
 
             umap_model = umap.UMAP(**umap_args).fit(self._get_document_vectors(norm=False)[noise_remvd_idx])
 
