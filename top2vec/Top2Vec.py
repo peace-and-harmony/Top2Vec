@@ -391,10 +391,8 @@ class Top2Vec:
 
             self.outliers_remvd_idx = outliers_remvd_idx
 
-            umap_model = umap.UMAP(**umap_args).fit(self._get_document_vectors(norm=False)[outliers_remvd_idx])
-
-            # return umap_model
-            self.umap_model = umap_model
+            # return umap_model.embedding_
+            self.get_embedding_ = umap_model.embedding_
 
 
         else:
@@ -416,10 +414,8 @@ class Top2Vec:
 
             self.noise_remvd_idx = noise_remvd_idx
 
-            umap_model = umap.UMAP(**umap_args).fit(self._get_document_vectors(norm=False)[noise_remvd_idx])
-
-            # return umap_model
-            self.umap_model = umap_model
+            # return umap_model.embedding_
+            self.get_embedding_ = umap_model.embedding_
 
         else:
             # calculate topic vectors from dense areas of documents
@@ -644,8 +640,8 @@ class Top2Vec:
     def _get_noise_remvd_idx(self):
         return self.noise_remvd_idx
 
-    def _get_umap_model(self):
-        return self.umap_model
+    def _get_embedding_(self):
+        return self.get_embedding_
 
     def _index2word(self, index):
         if self.embedding_model == 'doc2vec':
