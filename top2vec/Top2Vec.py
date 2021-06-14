@@ -433,7 +433,7 @@ class Top2Vec:
         # assign documents to topic
         if noise_remv:
             self.doc_top, self.doc_dist = self._calculate_documents_topic_noise(self.topic_vectors,
-                                                                      self.umap_model.embedding_)
+                                                                      self.get_embedding_)
         else:
             self.doc_top, self.doc_dist = self._calculate_documents_topic(self.topic_vectors,
                                                                       self._get_document_vectors())
@@ -675,7 +675,7 @@ class Top2Vec:
         if -1 in unique_labels:
             unique_labels.remove(-1)
         self.topic_vectors = self._l2_normalize(
-            np.vstack([self.umap_model.embedding_[np.where(cluster_labels == label)[0]]
+            np.vstack([self.get_embedding_[np.where(cluster_labels == label)[0]]
                       .mean(axis=0) for label in unique_labels]))
 
     def _calculate_documents_topic_noise(topic_vectors, document_vectors, dist=True):
