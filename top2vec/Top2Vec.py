@@ -374,7 +374,9 @@ class Top2Vec:
         logger.info('Finding topics')
 
         # create topic vectors
-        # self._create_topic_vectors(cluster.labels_)
+        self._create_topic_vectors(cluster.labels_)
+
+        # create topic vetors from 3-d for mapping
         self._create_topic_vectors_map(cluster.labels_)
 
 
@@ -385,9 +387,10 @@ class Top2Vec:
         self.topic_words, self.topic_word_scores = self._find_topic_words_and_scores(topic_vectors=self.topic_vectors)
 
         # assign documents to topic
-        # self.doc_top, self.doc_dist = self._calculate_documents_topic(self.topic_vectors,
-        #                                                               self._get_document_vectors())
         self.doc_top, self.doc_dist = self._calculate_documents_topic(self.topic_vectors,
+                                                                      self._get_document_vectors())
+        # assing documents to topic in 3-dim for mapping
+        self.doc_top_map, self.doc_dist_map = self._calculate_documents_topic(self.topic_vectors_map,
                                                                       self.umap_model.embedding_)
 
         # calculate topic sizes
@@ -593,7 +596,7 @@ class Top2Vec:
         unique_labels = set(cluster_labels)
         if -1 in unique_labels:
             unique_labels.remove(-1)
-        self.topic_vectors = self._l2_normalize(
+        self.topic_vectors_map = self._l2_normalize(
             np.vstack([self.umap_model.embedding_[np.where(cluster_labels == label)[0]]
                       .mean(axis=0) for label in unique_labels]))
 
