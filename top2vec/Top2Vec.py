@@ -170,6 +170,9 @@ class Top2Vec:
 
     verbose: bool (Optional, default True)
         Whether to print status data during training.
+
+    mapping: bool (Optional, default True)
+        Whether to generate 3d mapping.
     """
 
     def __init__(self,
@@ -186,7 +189,8 @@ class Top2Vec:
                  use_embedding_model_tokenizer=False,
                  umap_args=None,
                  hdbscan_args=None,
-                 verbose=True
+                 verbose=True,
+                 mapping=True
                  ):
 
         if verbose:
@@ -354,6 +358,11 @@ class Top2Vec:
         if umap_args is None:
             umap_args = {'n_neighbors': 15,
                          'n_components': 5,
+                         'metric': 'cosine'}
+        if mapping:
+            logger.info('3D mapping is ON, dimension embedding of documents set to n_components=3')
+            umap_args = {'n_neighbors': 15,
+                         'n_components': 3,
                          'metric': 'cosine'}
 
         umap_model = umap.UMAP(**umap_args).fit(self._get_document_vectors(norm=False))
