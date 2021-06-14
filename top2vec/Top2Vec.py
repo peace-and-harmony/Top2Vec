@@ -432,8 +432,8 @@ class Top2Vec:
 
         # assign documents to topic
         if noise_remv:
-            self.doc_top, self.doc_dist = self._calculate_documents_topic_noise(self, self.topic_vectors,
-                                                                      )
+            self.doc_top, self.doc_dist = self._calculate_documents_topic_noise(self.topic_vectors,
+                                                                      self.umap_model.embedding_)
         else:
             self.doc_top, self.doc_dist = self._calculate_documents_topic(self.topic_vectors,
                                                                       self._get_document_vectors())
@@ -678,36 +678,41 @@ class Top2Vec:
             np.vstack([self.umap_model.embedding_[np.where(cluster_labels == label)[0]]
                       .mean(axis=0) for label in unique_labels]))
 
-    def _calculate_documents_topic_noise(self, topic_vectors, dist=True):
+    def _calculate_documents_topic_noise(topic_vectors, document_vectors, dist=True):
         batch_size = 10000
         doc_top = []
         if dist:
             doc_dist = []
 
-        if self.umap_model.embedding_.shape[0] > batch_size:
+        if document_vectors.shape[0] > batch_size:
             current = 0
-            batches = int(self.umap_model.embedding_.shape[0] / batch_size)
-            extra = self.umap_model.embedding_.shape[0] % batch_size
+            batches = int(document_vectors.shape[0] / batch_size)
+            extra = document_vectors.shape[0] % batch_size
 
             for ind in range(0, batches):
-                res = np.inner(self.umap_model.embedding_[current:current + batch_size], topic_vectors)
+                res = np.inner(document_vectors[current:current + batch_size], topic_vectors)
                 doc_top.extend(np.argmax(res, axis=1))
                 if dist:
                     doc_dist.extend(np.max(res, axis=1))
                 current += batch_size
 
             if extra > 0:
-                res = np.inner(self.umap_model.embedding_[current:current + extra], topic_vectors)
+                res = np.inner(document_vectors[current:current + extra], topic_vectors)
                 doc_top.extend(np.argmax(res, axis=1))
                 if dist:
                     doc_dist.extend(np.max(res, axis=1))
             if dist:
                 doc_dist = np.array(doc_dist)
         else:
-            res = np.inner(self.umap_model.embedding_, topic_vectors)
+            res = np.inner(document_vectors, topic_vectors)
             doc_top = np.argmax(res, axis=1)
             if dist:
                 doc_dist = np.max(res, axis=1)
+
+        if dist:
+            return doc_top, doc_dist
+        else:
+            return doc_top
 
     def _deduplicate_topics(self):
         core_samples, labels = dbscan(X=self.topic_vectors,
